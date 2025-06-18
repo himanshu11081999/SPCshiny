@@ -170,7 +170,7 @@ ui <- navbarPage("SPC Dashboard",
         ")
                             ),
                             # Display image
-                            tags$img(src = "Flowchart.png", 
+                            tags$img(src = "/Flowchart.png",
                                      style = "display: block; margin-left: auto; margin-right: auto; width: 700px; border: 2px solid black;"),
                             div(
                               a("👉For more details click here👈", 
