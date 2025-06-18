@@ -1,0 +1,18 @@
+Package: SPCshiny
+Type: Package
+Title: SPC Shiny Dashboard
+Version: 0.1.0
+Author: Himanshu
+Maintainer: Himanshu <himanshu11081999@email.com>
+Description: A Shiny dashboard for uploading data and generating Statistical Process Control charts.
+License: MIT
+Encoding: UTF-8
+LazyData: true
+Imports:
+    shiny,
+    ggplot2,
+    readxl,
+    dplyr,
+    qcc
+Roxygen: list(markdown = TRUE, roclets = c("namespace", "rd"))
+RoxygenNote: 7.3.2
