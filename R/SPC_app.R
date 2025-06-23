@@ -40,9 +40,6 @@ if (www_dir == "") {
   }
 }
 
-# Add resource path
-addResourcePath("www", www_dir)
-
 ui <- navbarPage("SPC Dashboard",
                  tabPanel("Dashboard",
                           fluidPage(
