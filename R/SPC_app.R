@@ -29,7 +29,19 @@ library(readxl)
 library(dplyr)
 library(qcc)
 
-addResourcePath("www", "./www")
+# Get the path to the www directory INSIDE the installed package
+www_dir <- system.file("www", package = "SPCshiny")
+
+# If running from source during development
+if (www_dir == "") {
+  www_dir <- file.path(getwd(), "www")
+  if (!dir.exists(www_dir)) {
+    dir.create(www_dir)
+  }
+}
+
+# Add resource path
+addResourcePath("www", www_dir)
 
 ui <- navbarPage("SPC Dashboard",
                  tabPanel("Dashboard",
