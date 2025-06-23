@@ -7,7 +7,7 @@ Maintainer: Himanshu <himanshu11081999@email.com>
 Description: A Shiny dashboard for uploading data and generating Statistical Process Control charts.
 License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
+LazyData: false
 Imports:
     shiny (>= 1.7.0),
     ggplot2 (>= 3.4.0),
