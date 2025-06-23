@@ -29,7 +29,7 @@ library(readxl)
 library(dplyr)
 library(qcc)
 
-addResourcePath("www", "www")
+addResourcePath("www", "/www")
 
 ui <- navbarPage("SPC Dashboard",
                  tabPanel("Dashboard",
@@ -172,7 +172,7 @@ ui <- navbarPage("SPC Dashboard",
         ")
                             ),
                             # Display image
-                            tags$img(src = "Flowchart.png",
+                            tags$img(src = "www/Flowchart.png",
                                      style = "display: block; margin-left: auto; margin-right: auto; width: 700px; border: 2px solid black;"),
                             div(
                               a("👉For more details click here👈",
