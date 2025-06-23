@@ -12,7 +12,7 @@
 #' @import qcc
 
 SPC <- function() {
-  
+
 # List of required packages
 required_packages <- c("shiny", "ggplot2", "readxl", "dplyr", "qcc")
 
@@ -29,10 +29,12 @@ library(readxl)
 library(dplyr)
 library(qcc)
 
+addResourcePath("www", "www")
+
 ui <- navbarPage("SPC Dashboard",
                  tabPanel("Dashboard",
                           fluidPage(
-                            
+
                             tags$head(
                               tags$style(HTML("
                           /* Fixed Navbar Styling */
@@ -59,14 +61,14 @@ ui <- navbarPage("SPC Dashboard",
                             font-size: 16px !important;
                             padding: 15px 20px;
                           }
-                          
+
                           /* Main Content Area */
                           .main-container {
                             padding-top: 80px; /* Space for fixed navbar */
                             position: relative;
                             min-height: 100vh;
                           }
-                          
+
                           /* Diagonal Watermark */
                           .watermark {
                             position: fixed;
@@ -80,7 +82,7 @@ ui <- navbarPage("SPC Dashboard",
                             z-index: -1;
                             white-space: nowrap;
                           }
-                          
+
                           /* Mobile Responsiveness */
                           @media (max-width: 768px) {
                             .main-container {
@@ -92,12 +94,12 @@ ui <- navbarPage("SPC Dashboard",
                           }
                         "))
                             ),
-                            
+
                             # Watermark Element
                             div(class = "watermark", "SPC"),
-                            
+
                             titlePanel("SPC Chart Generator"),
-                            
+
                             sidebarLayout(
                               sidebarPanel(
                                 fileInput("file", "Upload Excel File:", accept = c(".xlsx", ".xls")),
@@ -107,11 +109,11 @@ ui <- navbarPage("SPC Dashboard",
                                 radioButtons("chart_type", "Select SPC Chart Type:",
                                              choices = c("Levey-Jennings", "IMR", "X-bar R", "np Chart", "p Chart", "c Chart", "u Chart")),
                                 numericInput("group_size", "Group/Subgroup Size (only for attribute charts):", value = 5, min = 1),
-                                selectInput("sigma", "Sigma Level:", 
+                                selectInput("sigma", "Sigma Level:",
                                             choices = c("1", "2", "3"), selected = "2"),
                                 downloadButton("download_chart", "Download Chart")
                               ),
-                              
+
                               mainPanel(
                                 plotOutput("spcPlot", height = "650px"),
                                 verbatimTextOutput("summaryText"),
@@ -135,13 +137,13 @@ ui <- navbarPage("SPC Dashboard",
                             )
                           )
                  ),
-                 
+
                  tabPanel("User Panel",
                           fluidPage(
-                            
+
                             # Watermark Element
                             div(class = "watermark", "SPC"),
-                            
+
                             titlePanel("User Manual"),
                             tags$div(style = "padding: 20px; font-size: 20px;",
                                      HTML("
@@ -170,11 +172,11 @@ ui <- navbarPage("SPC Dashboard",
         ")
                             ),
                             # Display image
-                            tags$img(src = "/Flowchart.png",
+                            tags$img(src = "Flowchart.png",
                                      style = "display: block; margin-left: auto; margin-right: auto; width: 700px; border: 2px solid black;"),
                             div(
-                              a("👉For more details click here👈", 
-                                href = "https://datatab.net/tutorial/get-started", 
+                              a("👉For more details click here👈",
+                                href = "https://datatab.net/tutorial/get-started",
                                 target = "_blank"),
                               style = "font-size: 20px; text-align: center; margin-top: 10px;"
                             ),
@@ -187,34 +189,34 @@ ui <- navbarPage("SPC Dashboard",
 )
 
 server <- function(input, output, session) {
-  
+
   output$sheet_selector <- renderUI({
     req(input$file)
     sheets <- excel_sheets(input$file$datapath)
     selectInput("sheet", "Select Sheet:", choices = sheets)
   })
-  
+
   dataInput <- reactive({
     req(input$file, input$sheet)
     read_excel(input$file$datapath, sheet = input$sheet)
   })
-  
+
   output$var_selector <- renderUI({
     req(dataInput())
     selectInput("var", "Select Main Variable:", choices = names(dataInput()))
   })
-  
+
   output$group_selector <- renderUI({
     req(dataInput())
     if (input$chart_type %in% c("X-bar R", "np Chart", "p Chart", "c Chart", "u Chart")) {
       selectInput("group", "Select Group Variable:", choices = names(dataInput()))
     }
   })
-  
+
   output$previewData <- renderTable({
     dataInput()
   })
-  
+
   chartSummary <- reactive({
     switch(input$chart_type,
            "Levey-Jennings" = "Use Levey-Jennings chart for lab or quality control measurements around a central mean.",
@@ -226,22 +228,22 @@ server <- function(input, output, session) {
            "u Chart" = "Use u chart for defects per unit when inspection area varies."
     )
   })
-  
+
   output$summaryText <- renderText({
     chartSummary()
   })
-  
+
   chartPlot <- reactive({
     req(input$var)
     data <- dataInput()
     x <- unlist(data[[input$var]])
-    
+
     qcc.options(
       title.font = 2, title.cex = 1.6,
       labels.cex = 1.4, cex = 1.4,
       cex.axis = 1.4, cex.lab = 1.4
     )
-    
+
     if (input$chart_type == "Levey-Jennings") {
       mean_val <- mean(x, na.rm = TRUE)
       sd_val <- sd(x, na.rm = TRUE)
@@ -268,7 +270,7 @@ server <- function(input, output, session) {
     } else if (input$chart_type == "np Chart") {
       req(input$group)
       counts <- table(data[[input$group]])
-      qcc(as.numeric(counts), type = "np", size = input$group_size, 
+      qcc(as.numeric(counts), type = "np", size = input$group_size,
           title = "np Chart", nsigmas = as.numeric(input$sigma))
     } else if (input$chart_type == "p Chart") {
       req(input$group)
@@ -282,11 +284,11 @@ server <- function(input, output, session) {
       qcc(df$Defects, type = "u", size = df$Units, title = "u Chart", nsigmas = as.numeric(input$sigma))
     }
   })
-  
+
   output$spcPlot <- renderPlot({
     chartPlot()
   })
-  
+
   output$download_chart <- downloadHandler(
     filename = function() {
       paste("SPC_Chart_", input$chart_type, "_", Sys.Date(), ".png", sep = "")
@@ -297,21 +299,21 @@ server <- function(input, output, session) {
       dev.off()
     }
   )
-  
+
   output$dummy_lj <- renderTable({
     data.frame(Measurement = c(101, 98, 99))
   })
-  
+
   output$dummy_xbar <- renderTable({
     data.frame(Batch = c("A", "A", "B", "B"), Measurement = c(98, 100, 97, 102))
   })
-  
+
   output$dummy_attr <- renderTable({
     data.frame(Day = 1:3, Defectives = c(2, 1, 3))
   })
 }
 
-shinyApp(ui = ui, server = server, launch.browser = TRUE)
+shinyApp(ui = ui, server = server)
 
 }
 
