@@ -5,14 +5,19 @@ Version: 0.1.0
 Author: Himanshu
 Maintainer: Himanshu <himanshu11081999@email.com>
 Description: A Shiny dashboard for uploading data and generating Statistical Process Control charts.
-License: MIT
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:
-    shiny,
-    ggplot2,
-    readxl,
-    dplyr,
-    qcc
+    shiny (>= 1.7.0),
+    ggplot2 (>= 3.4.0),
+    readxl (>= 1.4.0),
+    dplyr (>= 1.1.0),
+    qcc (>= 2.7)
+URL: https://github.com/username/SPCshiny
+BugReports: https://github.com/username/SPCshiny/issues
+Suggests:
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
 Roxygen: list(markdown = TRUE, roclets = c("namespace", "rd"))
 RoxygenNote: 7.3.2
